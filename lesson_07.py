@@ -15,7 +15,10 @@
 '''
 import openpyxl
 import requests
+
 session = requests.session()  # requests库的session模块，定义一个变量
+
+
 # 读取测试用例的函数
 def read_data(filename, sheetname):
     wb = openpyxl.load_workbook(filename)  # 加入这个工作簿对象 --赋值给变量wb
@@ -33,11 +36,13 @@ def read_data(filename, sheetname):
     # print(cases)
     return cases  # 定义返回值
 
+
 # 发送接口请求的函数
 def post_func(qcd_url, qcd_data):
     res = session.post(url=qcd_url, data=qcd_data)  # post方法发送接口请求
     result = res.json()  # 用json获取响应结果 -- 字典
     return result  # 定义返回值
+
 
 # 写入测试结果的函数
 def write_result(filename, sheetname, row, column, real_result):
@@ -45,6 +50,7 @@ def write_result(filename, sheetname, row, column, real_result):
     sheet = wb[sheetname]
     sheet.cell(row=row, column=column).value = real_result  # 写入
     wb.save(filename)
+
 
 # 将整个测试过程封装成一个执行函数
 def execute_func(filename, sheetname):
@@ -61,7 +67,7 @@ def execute_func(filename, sheetname):
         # print(type(expected_result))
         # 期望结果和执行结果进行对比，需要统一数据类型，用eval函数转换 -- 字符串 -->字典
         # print(case_id, url, data, expected_result)
-        real_result = post_func(qcd_url=url,qcd_data=data)  # 调用发送接口请求的函数
+        real_result = post_func(qcd_url=url, qcd_data=data)  # 调用发送接口请求的函数
         real_msg = real_result.get('msg')  # 字典取值 -- 获取做断言的有效数字段
         expected_msg = expected_result.get('msg')
         print('期望测试结果是：{}'.format(expected_msg))
@@ -73,7 +79,9 @@ def execute_func(filename, sheetname):
             print('第{}条测试用例不通过：'.format(case_id))
             final_result = 'failed'
         print('**' * 15)
-        write_result(filename, sheetname, case_id+1, 8, final_result)
+        write_result(filename, sheetname, case_id + 1, 8, final_result)
         # 调用写入测试结果的函数 -- 写入
-# execute_func('test_case.xlsx', 'recharge')
-# 充值需要带token，-- 传入充值接口
+
+
+execute_func('test_case.xlsx', 'register')
+# 调用执行函数
